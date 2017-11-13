@@ -49,11 +49,50 @@ namespace ElevenNote.Web.Controllers
             return View(model);
         }
 
+        //Remember that int id is important because of the route.
+        public ActionResult Edit(int id)
+        {
+            var service = CreateNoteService();
+            var detail = service.GetNoteById(id);
+            var model =
+                new NoteEdit
+                {
+                    NoteId = detail.NoteId,
+                    Title = detail.Title,
+                    Content = detail.Content
+                };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, NoteEdit model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            if (model.NoteId != id)
+            {
+                ModelState.AddModelError("", "Id Mismatch");
+                return View(model);
+            }
+
+            var service = CreateNoteService();
+
+            if (service.UpdateNote(model))
+            {
+                TempData["SaveResult"] = "Your note was updated";
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError("", "Your note could not be updated.");
+            return View();
+        }
+
         private NoteService CreateNoteService()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
             var service = new NoteService(userId);
             return service;
-        }
+        }        
     }
 }

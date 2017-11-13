@@ -55,5 +55,35 @@ namespace ElevenNote.Services
                 return query.ToArray();
             }
         }
+
+        public Note GetNoteById(int id)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                        .Notes
+                        .Single(e => e.NoteId == id);
+                return entity;
+            }
+        }
+
+        //This is a bool because we want to know if it updated properly or not.
+        public bool UpdateNote(NoteEdit model)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                        .Notes
+                        .Single(e => e.NoteId == model.NoteId);
+                entity.Title = model.Title;
+                entity.Content = model.Content;
+                entity.ModifiedUtc = DateTimeOffset.UtcNow;
+
+                //remember that this tells us how many rows are updated
+                return ctx.SaveChanges() == 1;
+            }
+        }
     }
 }
