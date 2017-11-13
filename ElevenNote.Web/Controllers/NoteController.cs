@@ -49,6 +49,14 @@ namespace ElevenNote.Web.Controllers
             return View(model);
         }
 
+        public ActionResult Details(int id)
+        {
+            var service = CreateNoteService();
+            var model = service.GetNoteById(id);
+
+            return View(model);
+        }
+
         //Remember that int id is important because of the route.
         public ActionResult Edit(int id)
         {
@@ -85,8 +93,16 @@ namespace ElevenNote.Web.Controllers
             }
 
             ModelState.AddModelError("", "Your note could not be updated.");
-            return View();
+            return View(model);
         }
+
+        //public ActionResult Delete(int id)
+        //{
+        //    var svc = CreateNoteService();
+        //    var model = svc.GetNoteById(id);
+
+        //    return View(model);
+        //}
 
         private NoteService CreateNoteService()
         {
